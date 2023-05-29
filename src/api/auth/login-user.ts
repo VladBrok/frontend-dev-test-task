@@ -31,9 +31,9 @@ export default async function (data: LoginData): Promise<IUser> {
   }
 
   await loginSchema.validate(data)
-  const arePasswordsMatch = await check(data.password, user.passwordHash)
+  const isPasswordCorrect = await check(data.password, user.passwordHash)
 
-  if (!arePasswordsMatch) {
+  if (!isPasswordCorrect) {
     throw new ResponseError(401)
   }
 
