@@ -3,3 +3,8 @@ export const ROUTE_PATHS = {
   DASHBOARD: "/dashboard",
   BOOKING: "/booking",
 }
+
+export const AUTH_ACTIONS = {
+  REGISTER: "register",
+  LOGIN: "login",
+}

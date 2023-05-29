@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: ROUTE_PATHS.ROOT,
-        element: <Auth action="register" />,
+        element: <Auth />,
       },
       {
         element: <Layout />,

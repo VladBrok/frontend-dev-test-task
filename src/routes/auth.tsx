@@ -5,6 +5,9 @@ import InputGroup from "react-bootstrap/InputGroup"
 import { Formik } from "formik"
 import { InferType, object, string } from "yup"
 import { useState } from "react"
+import { useNavigate, useParams } from "react-router"
+import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/shared-constants"
+import { useSearchParams } from "react-router-dom"
 
 // TODO: move to infrastructure (schema and type)
 // TODO: enhance validation
@@ -24,18 +27,43 @@ const authSchema = object().shape({
 
 type AuthData = InferType<typeof authSchema>
 
-interface IAuthProps {
-  action: "register" | "login"
-}
-
-export default function Auth(props: IAuthProps) {
+export default function Auth() {
   const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const query = new URLSearchParams(searchParams)
+  const action = query.get("action") ?? AUTH_ACTIONS.REGISTER
 
   const handleSubmit = (form: AuthData): void => {
     console.log(form)
   }
 
-  const submitButtonText = props.action === "register" ? "Регистрация" : "Вход"
+  const submitButtonText =
+    action === AUTH_ACTIONS.REGISTER ? "Регистрация" : "Вход"
+
+  const hint =
+    action === AUTH_ACTIONS.REGISTER ? (
+      <>
+        <span>Уже есть аккаунт?</span>
+        <Button
+          variant="link"
+          onClick={() => setSearchParams(`action=${AUTH_ACTIONS.LOGIN}`)}
+          className="mb-1"
+        >
+          Вход
+        </Button>
+      </>
+    ) : (
+      <>
+        <span>Ещё нет аккаунта?</span>
+        <Button
+          variant="link"
+          onClick={() => setSearchParams(`action=${AUTH_ACTIONS.REGISTER}`)}
+          className="mb-1"
+        >
+          Регистрация
+        </Button>
+      </>
+    )
 
   // TODO: find out about .trim
   return (
@@ -110,6 +138,7 @@ export default function Auth(props: IAuthProps) {
           </Form>
         )}
       </Formik>
+      <p className="mt-5">{hint}</p>
     </Container>
   )
 }
