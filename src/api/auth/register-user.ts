@@ -1,34 +1,26 @@
-import { InferType, object, string } from "yup"
 import { delay } from "../../lib/delay"
 import { ARTIFICIAL_API_DELAY_MS } from "../../lib/constants"
 import { v4 as uuidv4 } from "uuid"
 import { hash } from "../../lib/password"
 import { IUser } from "../../lib/types"
 import saveUser from "../../dummy-backend/save-user"
+import { InferType, object, string } from "yup"
+import { loginSchema } from "./login-user"
 
-// TODO: enhance validation
-export const authSchema = object().shape({
-  login: string()
-    .trim()
-    .required("Обязательное поле")
-    .min(3, "Минимум 3 символа")
-    .max(15, "Максимум 15 символов"),
-  password: string()
-    .trim()
-    .required("Обязательное поле")
-    .min(8, "Минимум 8 символов")
-    .max(15, "Максимум 15 символов"),
-  phone: string()
-    .trim()
-    .required("Обязательное поле")
-    .length(10, "Номер должен состоять из 10-ти цифр"),
-})
+export const registrationSchema = loginSchema.concat(
+  object().shape({
+    phone: string()
+      .trim()
+      .required("Обязательное поле")
+      .length(10, "Номер должен состоять из 10-ти цифр"),
+  }),
+)
 
-export type AuthData = InferType<typeof authSchema>
+export type RegistrationData = InferType<typeof registrationSchema>
 
-export default async function (data: AuthData): Promise<IUser> {
+export default async function (data: RegistrationData): Promise<IUser> {
   await delay(ARTIFICIAL_API_DELAY_MS)
-  const parsedData = await authSchema.validate(data)
+  const parsedData = await registrationSchema.validate(data)
 
   const passwordHash = await hash(parsedData.password)
   const user: IUser = {

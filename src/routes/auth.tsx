@@ -7,11 +7,15 @@ import { Formik } from "formik"
 import { useState } from "react"
 import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/constants"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import registerUser, { AuthData, authSchema } from "../api/auth/register-user"
+import registerUser, {
+  RegistrationData,
+  registrationSchema,
+} from "../api/auth/register-user"
 import { useMutation } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { setCurrentUser } from "../redux/slices/users-slice"
 import { ResponseError } from "../lib/response-error"
+import loginUser, { LoginData, loginSchema } from "../api/auth/login-user"
 
 export default function Auth() {
   const navigate = useNavigate()
@@ -24,8 +28,10 @@ export default function Auth() {
   const [isSubmitClicked, setIsSubmitClicked] = useState(false)
 
   const authRequest = useMutation({
-    mutationFn: async (data: AuthData) => {
-      const user = await registerUser(data) // TODO: register/login
+    mutationFn: async (data: RegistrationData | LoginData) => {
+      const authFunc =
+        action === AUTH_ACTIONS.REGISTER ? registerUser : loginUser
+      const user = await authFunc(data as any)
       dispath(setCurrentUser(user))
       navigate(ROUTE_PATHS.DASHBOARD)
     },
@@ -36,19 +42,31 @@ export default function Auth() {
     setSearchParams(`action=${AUTH_ACTIONS[action]}`)
   }
 
+  const getErrorStatusCode = (): number | null => {
+    const isError =
+      authRequest.isError && authRequest.error instanceof ResponseError
+    return isError ? (authRequest.error as ResponseError).status : null
+  }
+
+  const authSchema =
+    action === AUTH_ACTIONS.REGISTER ? registrationSchema : loginSchema
+
   const submitButtonText = authRequest.isLoading
     ? "Загрузка..."
     : action === AUTH_ACTIONS.REGISTER
     ? "Регистрация"
     : "Вход"
 
-  const isUserAlreadyExists =
-    authRequest.isError &&
-    authRequest.error instanceof ResponseError &&
-    authRequest.error.status === 409
+  const isUserAlreadyExists = getErrorStatusCode() === 409
+  const isUserNotFound = getErrorStatusCode() === 404
+  const isInvalidPassword = getErrorStatusCode() === 401
 
   const errorText = isUserAlreadyExists
     ? "Пользователь с данным логином уже существует. Пожалуйста, укажите другой логин, или войдите в систему."
+    : isUserNotFound
+    ? "Пользователь с данным логином не найден. Пожалуйста, укажите свой логин, или зарегистрируйтесь."
+    : isInvalidPassword
+    ? "Неверный пароль. Пожалуйста, повторите попытку."
     : "В ходе авторизации произошла ошибка. Попробуйте перезагрузить страницу."
 
   const hint =
@@ -120,31 +138,33 @@ export default function Auth() {
                 {errors.password}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group
-              controlId="validationFormikUsername"
-              className="mt-3 pb-2"
-            >
-              <Form.Label>Телефон</Form.Label>
-              <InputGroup hasValidation>
-                <InputGroup.Text id="inputGroupPrepend">+7</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="Телефон"
-                  aria-describedby="inputGroupPrepend"
-                  name="phone"
-                  value={values.phone}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    setFieldValue("phone", value.replace(/\D/g, ""))
-                  }}
-                  isInvalid={!!errors.phone}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.phone}
-                </Form.Control.Feedback>
-              </InputGroup>
-            </Form.Group>
+            {action === AUTH_ACTIONS.REGISTER && (
+              <Form.Group
+                controlId="validationFormikUsername"
+                className="mt-3 pb-2"
+              >
+                <Form.Label>Телефон</Form.Label>
+                <InputGroup hasValidation>
+                  <InputGroup.Text id="inputGroupPrepend">+7</InputGroup.Text>
+                  <Form.Control
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Телефон"
+                    aria-describedby="inputGroupPrepend"
+                    name="phone"
+                    value={values.phone}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setFieldValue("phone", value.replace(/\D/g, ""))
+                    }}
+                    isInvalid={!!errors.phone}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.phone}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
+            )}
             <Button
               type="submit"
               variant="dark"
