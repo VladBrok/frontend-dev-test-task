@@ -3,8 +3,8 @@ import { check } from "../../lib/password"
 import { ResponseError } from "../../lib/response-error"
 import { InferType, object, string } from "yup"
 import { IUser } from "../../lib/types"
-import { delay } from "@reduxjs/toolkit/dist/utils"
 import { ARTIFICIAL_API_DELAY_MS } from "../../lib/constants"
+import { delay } from "../../lib/delay"
 
 // TODO: enhance validation
 export const loginSchema = object().shape({
