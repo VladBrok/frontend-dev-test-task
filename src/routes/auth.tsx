@@ -61,7 +61,6 @@ export default function Auth() {
       </>
     )
 
-  // TODO: find out about .trim
   return (
     <Container className="mt-5 d-flex flex-column align-items-center justify-content-center">
       <h1 className="mb-4 fs-2">Добро пожаловать!</h1>

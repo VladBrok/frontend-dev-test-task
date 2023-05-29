@@ -7,5 +7,5 @@ export default function Dashboard() {
     return <></>
   }
 
-  return <>Dashboard: {user.login}</>
+  return <>Dashboard: {JSON.stringify(user)}</>
 }
