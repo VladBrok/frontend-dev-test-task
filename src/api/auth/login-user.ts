@@ -3,6 +3,8 @@ import { check } from "../../lib/password"
 import { ResponseError } from "../../lib/response-error"
 import { InferType, object, string } from "yup"
 import { IUser } from "../../lib/types"
+import { delay } from "@reduxjs/toolkit/dist/utils"
+import { ARTIFICIAL_API_DELAY_MS } from "../../lib/constants"
 
 // TODO: enhance validation
 export const loginSchema = object().shape({
@@ -21,6 +23,7 @@ export const loginSchema = object().shape({
 export type LoginData = InferType<typeof loginSchema>
 
 export default async function (data: LoginData): Promise<IUser> {
+  await delay(ARTIFICIAL_API_DELAY_MS)
   const user = getUser(data.login)
 
   if (!user) {
@@ -28,9 +31,9 @@ export default async function (data: LoginData): Promise<IUser> {
   }
 
   await loginSchema.validate(data)
-  const isPasswordValid = await check(data.password, user.passwordHash)
+  const arePasswordsMatch = await check(data.password, user.passwordHash)
 
-  if (!isPasswordValid) {
+  if (!arePasswordsMatch) {
     throw new ResponseError(401)
   }
 
