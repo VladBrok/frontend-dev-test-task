@@ -5,12 +5,13 @@ import Form from "react-bootstrap/Form"
 import InputGroup from "react-bootstrap/InputGroup"
 import { Formik } from "formik"
 import { useState } from "react"
-import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/shared-constants"
+import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/constants"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import registerUser, { AuthData, authSchema } from "../api/auth/register-user"
 import { useMutation } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { setCurrentUser } from "../redux/slices/users-slice"
+import { ResponseError } from "../lib/response-error"
 
 export default function Auth() {
   const navigate = useNavigate()
@@ -35,6 +36,15 @@ export default function Auth() {
     : action === AUTH_ACTIONS.REGISTER
     ? "Регистрация"
     : "Вход"
+
+  const isUserAlreadyExists =
+    authRequest.isError &&
+    authRequest.error instanceof ResponseError &&
+    authRequest.error.status === 409
+
+  const errorText = isUserAlreadyExists
+    ? "Пользователь с данным логином уже существует. Пожалуйста, укажите другой логин, или войдите в систему."
+    : "В ходе авторизации произошла ошибка. Попробуйте перезагрузить страницу."
 
   const hint =
     action === AUTH_ACTIONS.REGISTER ? (
@@ -144,9 +154,8 @@ export default function Auth() {
       </Formik>
 
       {authRequest.isError && (
-        <Alert variant="danger" className="mt-4">
-          В ходе авторизации произошла ошибка. Попробуйте перезагрузить
-          страницу.
+        <Alert variant="danger" className="mt-4" style={{ maxWidth: "50%" }}>
+          {errorText}
         </Alert>
       )}
       <p className="mt-5">{hint}</p>

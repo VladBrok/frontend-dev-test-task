@@ -1,12 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { RootState } from "../store"
-
-export interface IUser {
-  uuid: string
-  login: string
-  passwordHash: string
-  phone: string
-}
+import { IUser } from "../../lib/types"
 
 export interface IUserState {
   current: IUser | null

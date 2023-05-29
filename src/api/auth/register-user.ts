@@ -1,9 +1,10 @@
 import { InferType, object, string } from "yup"
 import { delay } from "../../lib/delay"
-import { ARTIFICIAL_API_DELAY_MS } from "../../lib/shared-constants"
-import { IUser } from "../../redux/slices/users-slice"
+import { ARTIFICIAL_API_DELAY_MS } from "../../lib/constants"
 import { v4 as uuidv4 } from "uuid"
 import { hash } from "../../lib/password"
+import { IUser } from "../../lib/types"
+import saveUser from "../../dummy-backend/save-user"
 
 // TODO: enhance validation
 export const authSchema = object().shape({
@@ -36,6 +37,8 @@ export default async function (data: AuthData): Promise<IUser> {
     phone: parsedData.phone,
     passwordHash: passwordHash,
   }
+
+  saveUser(user)
 
   return user
 }
