@@ -5,8 +5,7 @@ import InputGroup from "react-bootstrap/InputGroup"
 import { Formik } from "formik"
 import { InferType, object, string } from "yup"
 import { useState } from "react"
-import { useNavigate, useParams } from "react-router"
-import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/shared-constants"
+import { AUTH_ACTIONS } from "../lib/shared-constants"
 import { useSearchParams } from "react-router-dom"
 
 // TODO: move to infrastructure (schema and type)
@@ -81,7 +80,7 @@ export default function Auth() {
       >
         {({ handleSubmit, handleChange, values, errors }) => (
           <Form noValidate onSubmit={handleSubmit} className="w-25 mx-auto">
-            <Form.Group controlId="validationFormikLogin" className="mt-2">
+            <Form.Group controlId="validationFormikLogin" className="mt-3">
               <Form.Label>Логин</Form.Label>
               <Form.Control
                 type="text"
@@ -95,7 +94,7 @@ export default function Auth() {
                 {errors.login}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group controlId="validationFormikPassword" className="mt-2">
+            <Form.Group controlId="validationFormikPassword" className="mt-3">
               <Form.Label>Пароль</Form.Label>
               <Form.Control
                 type="password"
@@ -109,7 +108,10 @@ export default function Auth() {
                 {errors.password}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group controlId="validationFormikUsername" className="mt-2">
+            <Form.Group
+              controlId="validationFormikUsername"
+              className="mt-3 pb-2"
+            >
               <Form.Label>Телефон</Form.Label>
               <InputGroup hasValidation>
                 <InputGroup.Text id="inputGroupPrepend">+7</InputGroup.Text>
