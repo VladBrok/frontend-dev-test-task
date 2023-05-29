@@ -3,41 +3,36 @@ import Container from "react-bootstrap/Container"
 import Form from "react-bootstrap/Form"
 import InputGroup from "react-bootstrap/InputGroup"
 import { Formik } from "formik"
-import { InferType, object, string } from "yup"
 import { useState } from "react"
-import { AUTH_ACTIONS } from "../lib/shared-constants"
-import { useSearchParams } from "react-router-dom"
-
-// TODO: move to infrastructure (schema and type)
-// TODO: enhance validation
-const authSchema = object().shape({
-  login: string()
-    .required("Обязательное поле")
-    .min(3, "Минимум 3 символа")
-    .max(15, "Максимум 15 символов"),
-  password: string()
-    .required("Обязательное поле")
-    .min(8, "Минимум 8 символов")
-    .max(15, "Максимум 15 символов"),
-  phone: string()
-    .required("Обязательное поле")
-    .length(10, "Номер должен состоять из 10-ти цифр"),
-})
-
-type AuthData = InferType<typeof authSchema>
+import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/shared-constants"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import registerUser, {
+  AuthData,
+  authSchema,
+} from "../infrastructure/auth/register-user"
+import { useMutation } from "@tanstack/react-query"
 
 export default function Auth() {
-  const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const query = new URLSearchParams(searchParams)
   const action = query.get("action") ?? AUTH_ACTIONS.REGISTER
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+  const authRequest = useMutation({
+    mutationFn: async (data: AuthData) => {
+      await registerUser(data) // TODO: register/login
+      navigate(ROUTE_PATHS.DASHBOARD)
+      // TODO: safe redux state
+    },
+  })
 
-  const handleSubmit = (form: AuthData): void => {
-    console.log(form)
-  }
+  console.log(authRequest.isLoading, authRequest.isError)
 
-  const submitButtonText =
-    action === AUTH_ACTIONS.REGISTER ? "Регистрация" : "Вход"
+  const submitButtonText = authRequest.isLoading
+    ? "Загрузка..."
+    : action === AUTH_ACTIONS.REGISTER
+    ? "Регистрация"
+    : "Вход"
 
   const hint =
     action === AUTH_ACTIONS.REGISTER ? (
@@ -70,15 +65,16 @@ export default function Auth() {
       <h1 className="mb-4 fs-2">Добро пожаловать!</h1>
       <Formik
         validationSchema={authSchema}
-        onSubmit={handleSubmit}
+        onSubmit={authRequest.mutate}
+        // TODO: remove defaults
         initialValues={{
-          login: "",
-          password: "",
-          phone: "",
+          login: "vlad",
+          password: "12345678",
+          phone: "9490000000",
         }}
         validateOnChange={isSubmitClicked}
       >
-        {({ handleSubmit, handleChange, values, errors }) => (
+        {({ handleSubmit, handleChange, setFieldValue, values, errors }) => (
           <Form noValidate onSubmit={handleSubmit} className="w-25 mx-auto">
             <Form.Group controlId="validationFormikLogin" className="mt-3">
               <Form.Label>Логин</Form.Label>
@@ -116,12 +112,16 @@ export default function Auth() {
               <InputGroup hasValidation>
                 <InputGroup.Text id="inputGroupPrepend">+7</InputGroup.Text>
                 <Form.Control
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="Телефон"
                   aria-describedby="inputGroupPrepend"
                   name="phone"
                   value={values.phone}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    setFieldValue("phone", value.replace(/\D/g, ""))
+                  }}
                   isInvalid={!!errors.phone}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -133,6 +133,7 @@ export default function Auth() {
               type="submit"
               variant="dark"
               onClick={() => setIsSubmitClicked(true)}
+              disabled={authRequest.isLoading}
               className="mt-4 w-100 d-block"
             >
               {submitButtonText}
