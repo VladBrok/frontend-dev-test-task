@@ -1,4 +1,5 @@
 import Button from "react-bootstrap/Button"
+import Alert from "react-bootstrap/Alert"
 import Container from "react-bootstrap/Container"
 import Form from "react-bootstrap/Form"
 import InputGroup from "react-bootstrap/InputGroup"
@@ -28,8 +29,6 @@ export default function Auth() {
       navigate(ROUTE_PATHS.DASHBOARD)
     },
   })
-
-  console.log(authRequest.isLoading, authRequest.isError)
 
   const submitButtonText = authRequest.isLoading
     ? "Загрузка..."
@@ -144,6 +143,13 @@ export default function Auth() {
           </Form>
         )}
       </Formik>
+
+      {authRequest.isError && (
+        <Alert variant="danger" className="mt-4">
+          В ходе авторизации произошла ошибка. Попробуйте перезагрузить
+          страницу.
+        </Alert>
+      )}
       <p className="mt-5">{hint}</p>
     </Container>
   )
