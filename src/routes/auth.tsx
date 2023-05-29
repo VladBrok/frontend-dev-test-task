@@ -31,6 +31,11 @@ export default function Auth() {
     },
   })
 
+  const changeAction = (action: keyof typeof AUTH_ACTIONS): void => {
+    authRequest.reset()
+    setSearchParams(`action=${AUTH_ACTIONS[action]}`)
+  }
+
   const submitButtonText = authRequest.isLoading
     ? "Загрузка..."
     : action === AUTH_ACTIONS.REGISTER
@@ -52,7 +57,7 @@ export default function Auth() {
         <span>Уже есть аккаунт?</span>
         <Button
           variant="link"
-          onClick={() => setSearchParams(`action=${AUTH_ACTIONS.LOGIN}`)}
+          onClick={() => changeAction("LOGIN")}
           className="mb-1"
         >
           Вход
@@ -63,7 +68,7 @@ export default function Auth() {
         <span>Ещё нет аккаунта?</span>
         <Button
           variant="link"
-          onClick={() => setSearchParams(`action=${AUTH_ACTIONS.REGISTER}`)}
+          onClick={() => changeAction("REGISTER")}
           className="mb-1"
         >
           Регистрация
