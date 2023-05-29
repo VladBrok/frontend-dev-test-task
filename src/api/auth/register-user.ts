@@ -1,6 +1,9 @@
 import { InferType, object, string } from "yup"
 import { delay } from "../../lib/delay"
 import { ARTIFICIAL_API_DELAY_MS } from "../../lib/shared-constants"
+import { IUser } from "../../redux/slices/users-slice"
+import { v4 as uuidv4 } from "uuid"
+import { hash } from "../../lib/password"
 
 // TODO: enhance validation
 export const authSchema = object().shape({
@@ -19,8 +22,17 @@ export const authSchema = object().shape({
 
 export type AuthData = InferType<typeof authSchema>
 
-export default async function (data: AuthData): Promise<void> {
+export default async function (data: AuthData): Promise<IUser> {
   await delay(ARTIFICIAL_API_DELAY_MS)
   await authSchema.validate(data)
-  console.log("got data:", data)
+
+  const passwordHash = await hash(data.password)
+  const user: IUser = {
+    uuid: uuidv4(),
+    login: data.login,
+    phone: data.phone,
+    passwordHash: passwordHash,
+  }
+
+  return user
 }
