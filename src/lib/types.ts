@@ -15,5 +15,5 @@ export interface IBooking {
 export interface ITable {
   uuid: string
   guestCount: number
-  bookingUuid: string
+  bookingUuid: string | null
 }
