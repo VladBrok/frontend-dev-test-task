@@ -24,6 +24,7 @@ export type LoginData = InferType<typeof loginSchema>
 
 export default async function (data: LoginData): Promise<IUser> {
   await delay(ARTIFICIAL_API_DELAY_MS)
+
   const user = getUser(data.login)
 
   if (!user) {

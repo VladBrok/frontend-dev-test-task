@@ -4,3 +4,10 @@ export interface IUser {
   passwordHash: string
   phone: string
 }
+
+export interface IBooking {
+  uuid: string
+  datetime: string
+  person_count: number
+  userUuid: string
+}

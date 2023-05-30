@@ -100,11 +100,10 @@ export default function Auth() {
       <Formik
         validationSchema={authSchema}
         onSubmit={authRequest.mutate}
-        // TODO: remove defaults
         initialValues={{
-          login: "vlad",
-          password: "12345678",
-          phone: "9490000000",
+          login: "",
+          password: "",
+          phone: "",
         }}
         validateOnChange={isSubmitClicked}
       >

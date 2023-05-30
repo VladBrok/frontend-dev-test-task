@@ -1,13 +1,15 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { RootState } from "../store"
 import { IUser } from "../../lib/types"
+import getUser from "../../dummy-backend/get-user"
 
 export interface IUserState {
   current: IUser | null
 }
 
 const initialState: IUserState = {
-  current: null,
+  // TODO: set to null
+  current: getUser("vlad"),
 }
 
 export const usersSlice = createSlice({
