@@ -8,6 +8,12 @@ export interface IUser {
 export interface IBooking {
   uuid: string
   datetime: string
-  person_count: number
+  guestCount: number
   userUuid: string
+}
+
+export interface ITable {
+  uuid: string
+  guestCount: number
+  bookingUuid: string
 }
