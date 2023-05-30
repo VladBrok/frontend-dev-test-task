@@ -24,14 +24,14 @@ const INITIAL: IStorageData = {
     },
     {
       uuid: "2",
-      datetime: new Date(2023, 3, 25).toISOString(),
-      person_count: 5,
+      datetime: new Date(2023, 5, 1).toISOString(),
+      person_count: 8,
       userUuid: "123",
     },
     {
       uuid: "3",
-      datetime: new Date(2023, 4, 1).toISOString(),
-      person_count: 8,
+      datetime: new Date(2023, 3, 25).toISOString(),
+      person_count: 5,
       userUuid: "123",
     },
   ],
