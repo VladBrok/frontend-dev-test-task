@@ -2,7 +2,7 @@ import Container from "react-bootstrap/Container"
 import Alert from "react-bootstrap/Alert"
 import Spinner from "react-bootstrap/Spinner"
 import useCurrentUser from "../hooks/use-current-user"
-import useBookings from "../hooks/queries/use-bookings"
+import useBookingsQuery from "../hooks/queries/use-bookings-query"
 import { Suspense, lazy } from "react"
 
 const BookingList = lazy(() => import("../components/booking-list"))
@@ -10,7 +10,7 @@ const BookingList = lazy(() => import("../components/booking-list"))
 export default function Dashboard() {
   const user = useCurrentUser()
   const userUuid = user?.uuid || ""
-  const bookingsRequest = useBookings(userUuid)
+  const bookingsRequest = useBookingsQuery(userUuid)
 
   if (!user) {
     return <></>
@@ -33,9 +33,7 @@ export default function Dashboard() {
             страницу.
           </Alert>
         )}
-        {bookingsRequest.isSuccess && (
-          <BookingList bookings={bookingsRequest.data} />
-        )}
+        {bookingsRequest.isSuccess && <BookingList />}
       </Suspense>
     </Container>
   )

@@ -8,13 +8,15 @@ import { useMemo } from "react"
 import dateComparator from "../lib/date-comparator"
 import { useNavigate } from "react-router"
 import { ROUTE_PATHS } from "../lib/constants"
+import { useAppSelector } from "../redux/hooks"
 
 export interface IBookingListProps {
   bookings: IBooking[]
 }
 
-export default function BookingList({ bookings }: IBookingListProps) {
+export default function BookingList() {
   const navigate = useNavigate()
+  const bookings = useAppSelector((state) => state.bookings.list)
 
   const sortedBookings = useMemo(
     () =>
