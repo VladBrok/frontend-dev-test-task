@@ -54,6 +54,10 @@ export default function Header() {
 
   const spinner = <Spinner animation="grow" className="mx-auto mt-5" />
 
+  const title = MENU_LINKS.find(
+    (link) => link.route === location.pathname,
+  )?.name
+
   return (
     <div>
       <Navbar
@@ -66,9 +70,7 @@ export default function Header() {
         <Container fluid>
           <div className="d-flex gap-4">
             <Navbar.Toggle onClick={() => setIsMenuOpen((prev) => !prev)} />
-            <Navbar.Brand href="#">
-              Ресторан &quot;Битый пиксель&quot;
-            </Navbar.Brand>
+            <Navbar.Brand href="#">{title}</Navbar.Brand>
           </div>
           <div className="d-flex gap-3 align-items-center">
             <Navbar.Text className="text-light fs-5">{user?.login}</Navbar.Text>
