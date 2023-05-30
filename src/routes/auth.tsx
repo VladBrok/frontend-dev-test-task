@@ -1,10 +1,9 @@
 import Button from "react-bootstrap/Button"
-import Alert from "react-bootstrap/Alert"
 import Container from "react-bootstrap/Container"
 import Form from "react-bootstrap/Form"
 import InputGroup from "react-bootstrap/InputGroup"
 import { Formik } from "formik"
-import { useState } from "react"
+import { Suspense, lazy, useState } from "react"
 import { AUTH_ACTIONS, ROUTE_PATHS } from "../lib/constants"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import registerUser, {
@@ -16,6 +15,8 @@ import { useDispatch } from "react-redux"
 import { setCurrentUser } from "../redux/slices/users-slice"
 import { ResponseError } from "../lib/response-error"
 import loginUser, { LoginData, loginSchema } from "../api/auth/login-user"
+
+const Alert = lazy(() => import("react-bootstrap/Alert"))
 
 export default function Auth() {
   const navigate = useNavigate()
@@ -177,11 +178,13 @@ export default function Auth() {
         )}
       </Formik>
 
-      {authRequest.isError && (
-        <Alert variant="danger" className="mt-4" style={{ maxWidth: "50%" }}>
-          {errorText}
-        </Alert>
-      )}
+      <Suspense>
+        {authRequest.isError && (
+          <Alert variant="danger" className="mt-4" style={{ maxWidth: "50%" }}>
+            {errorText}
+          </Alert>
+        )}
+      </Suspense>
       <p className="mt-5">{hint}</p>
     </Container>
   )

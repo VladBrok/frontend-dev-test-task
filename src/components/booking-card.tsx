@@ -4,12 +4,18 @@ import { IBooking } from "../lib/types"
 import Card from "react-bootstrap/Card"
 import Button from "react-bootstrap/Button"
 import { Suspense, lazy, useMemo, useState } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { useDispatch } from "react-redux"
+import { cancelBooking as cancelBookingAction } from "../redux/slices/bookings-slice"
+import { setToast } from "../redux/slices/toast-slice"
+import cancelBooking from "../api/cancel-booking"
 
 const Modal = lazy(() => import("react-bootstrap/Modal"))
 const ModalHeader = lazy(() => import("react-bootstrap/ModalHeader"))
 const ModalTitle = lazy(() => import("react-bootstrap/ModalTitle"))
 const ModalBody = lazy(() => import("react-bootstrap/ModalBody"))
 const ModalFooter = lazy(() => import("react-bootstrap/ModalFooter"))
+const Alert = lazy(() => import("react-bootstrap/Alert"))
 
 export interface IBookingProps {
   booking: IBooking
@@ -17,6 +23,17 @@ export interface IBookingProps {
 
 export default function BookingCard({ booking }: IBookingProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const dispatch = useDispatch()
+  const cancellationRequest = useMutation({
+    mutationFn: async () => {
+      await cancelBooking(booking.uuid)
+      dispatch(cancelBookingAction(booking.uuid))
+      dispatch(
+        setToast({ isActive: true, text: "Бронирование успешно отменено." }),
+      )
+      closeModal()
+    },
+  })
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -35,6 +52,10 @@ export default function BookingCard({ booking }: IBookingProps) {
     () => pluralizeGuestCount(booking.guestCount),
     [booking.guestCount],
   )
+
+  const modalConfirmButtonText = cancellationRequest.isLoading
+    ? "Загрузка..."
+    : "Подтвердить"
 
   return (
     <div className="p-3">
@@ -55,20 +76,31 @@ export default function BookingCard({ booking }: IBookingProps) {
         {isModalOpen && (
           <Modal show={isModalOpen} onHide={closeModal} centered>
             <ModalHeader closeButton>
-              <ModalTitle>Подтвердите отмену брони</ModalTitle>
+              <ModalTitle>Подтвердите отмену</ModalTitle>
             </ModalHeader>
             <ModalBody>
               <p>
-                Выбрана бронь на {guestCount}, на дату: {datetime}.
+                Выбрано бронирование на {guestCount}, на дату: {datetime}.
               </p>
-              <p>Отмененную бронь нельзя будет восстановить.</p>
+              <p>Отмененное бронирование нельзя будет восстановить.</p>
+              <Suspense>
+                {cancellationRequest.isError && (
+                  <Alert variant="danger">
+                    Не удалось отменить бронирование. Попробуйте позже.
+                  </Alert>
+                )}
+              </Suspense>
             </ModalBody>
             <ModalFooter>
               <Button variant="outline-secondary" onClick={closeModal}>
                 Закрыть
               </Button>
-              <Button variant="outline-danger" onClick={closeModal}>
-                Подтвердить
+              <Button
+                variant="outline-danger"
+                onClick={() => cancellationRequest.mutate()}
+                disabled={cancellationRequest.isLoading}
+              >
+                {modalConfirmButtonText}
               </Button>
             </ModalFooter>
           </Modal>

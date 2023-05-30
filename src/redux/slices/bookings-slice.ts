@@ -17,9 +17,13 @@ export const bookingsSlice = createSlice({
       const bookings = action.payload
       state.list = bookings
     },
+    cancelBooking: (state, action: PayloadAction<string>) => {
+      const uuid = action.payload
+      state.list = state.list.filter((booking) => booking.uuid !== uuid)
+    },
   },
 })
 
-export const { setBookings } = bookingsSlice.actions
+export const { setBookings, cancelBooking } = bookingsSlice.actions
 
 export default bookingsSlice.reducer

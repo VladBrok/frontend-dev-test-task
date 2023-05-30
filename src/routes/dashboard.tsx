@@ -1,11 +1,11 @@
 import Container from "react-bootstrap/Container"
-import Alert from "react-bootstrap/Alert"
 import Spinner from "react-bootstrap/Spinner"
 import useCurrentUser from "../hooks/use-current-user"
 import useBookingsQuery from "../hooks/queries/use-bookings-query"
 import { Suspense, lazy } from "react"
 
 const BookingList = lazy(() => import("../components/booking-list"))
+const Alert = lazy(() => import("react-bootstrap/Alert"))
 
 export default function Dashboard() {
   const user = useCurrentUser()
