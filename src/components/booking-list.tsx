@@ -17,7 +17,8 @@ export default function BookingList({ bookings }: IBookingListProps) {
   const navigate = useNavigate()
 
   const sortedBookings = useMemo(
-    () => bookings.sort((a, b) => dateComparator(b.datetime, a.datetime)),
+    () =>
+      bookings.slice().sort((a, b) => dateComparator(b.datetime, a.datetime)),
     [bookings],
   )
 
