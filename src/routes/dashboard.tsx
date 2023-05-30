@@ -1,7 +1,11 @@
 import Container from "react-bootstrap/Container"
+import Alert from "react-bootstrap/Alert"
+import Spinner from "react-bootstrap/Spinner"
 import useCurrentUser from "../hooks/use-current-user"
 import useBookings from "../hooks/queries/use-bookings"
-import BookingList from "../components/booking-list"
+import { Suspense, lazy } from "react"
+
+const BookingList = lazy(() => import("../components/booking-list"))
 
 export default function Dashboard() {
   const user = useCurrentUser()
@@ -12,13 +16,27 @@ export default function Dashboard() {
     return <></>
   }
 
-  // TODO: loading/error
+  const spinner = (
+    <div className="d-flex justify-content-center">
+      <Spinner animation="grow" />
+    </div>
+  )
+
   return (
     <Container>
       <h1 className="fs-2 mb-4">Текущие бронирования</h1>
-      {bookingsRequest.isSuccess && (
-        <BookingList bookings={bookingsRequest.data} />
-      )}
+      <Suspense fallback={spinner}>
+        {bookingsRequest.isLoading && spinner}
+        {bookingsRequest.isError && (
+          <Alert variant="danger" className="w-50 mx-auto">
+            Не удалось загрузить текущие бронирования. Попробуйте перезагрузить
+            страницу.
+          </Alert>
+        )}
+        {bookingsRequest.isSuccess && (
+          <BookingList bookings={bookingsRequest.data} />
+        )}
+      </Suspense>
     </Container>
   )
 }
