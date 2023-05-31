@@ -81,6 +81,8 @@ export default function Booking() {
     return <></>
   }
 
+  // TODO: make datepickers readonly
+
   return (
     <Container>
       <h1 className="fs-2 text-center mb-5">Забронировать</h1>
