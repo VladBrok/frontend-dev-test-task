@@ -7,7 +7,7 @@ import getUnavailableDates from "../lib/get-unavailable-dates"
 import useBookingsQuery from "../hooks/queries/use-bookings-query"
 import { useMemo, useState } from "react"
 import DatePicker from "react-datepicker"
-import { date, object } from "yup"
+import { InferType, date, number, object } from "yup"
 import {
   BOOKING_DURATION_HOURS,
   BOOKING_START_MAX_HOURS,
@@ -16,6 +16,9 @@ import {
   BOOKING_START_MIN_TIME,
 } from "../lib/constants"
 import getUnavailableTimes from "../lib/get-unavailable-times"
+import getMaxGuestCount from "../lib/get-max-guest-count"
+import pluralizeGuestCount from "../lib/pluralize-guest-count"
+import { useMutation } from "@tanstack/react-query"
 
 export default function Booking() {
   const tablesQuery = useTablesQuery()
@@ -38,6 +41,14 @@ export default function Booking() {
 
     return getUnavailableTimes(selectedDate, bookingsQuery.data)
   }, [bookingsQuery.data, selectedDate])
+
+  const maxGuestCount = useMemo(() => {
+    if (!tablesQuery.data) {
+      return 1
+    }
+
+    return getMaxGuestCount(tablesQuery.data)
+  }, [tablesQuery.data])
 
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -73,6 +84,18 @@ export default function Booking() {
             (unavailable) => unavailable.getHours() === time.getHours(),
           ),
       ),
+    guestCount: number()
+      .required("Обязательное поле")
+      .min(1, "Минимум 1 гость")
+      .max(maxGuestCount, `Максимум ${pluralizeGuestCount(maxGuestCount)}`),
+  })
+
+  const bookingRequest = useMutation({
+    mutationFn: async (
+      data: InferType<typeof bookingSchema>,
+    ): Promise<void> => {
+      console.log(data)
+    },
   })
 
   // TODO: make datepickers readonly
@@ -82,11 +105,14 @@ export default function Booking() {
       <h1 className="fs-2 text-center mb-5">Забронировать</h1>
       <Formik
         validationSchema={bookingSchema}
-        onSubmit={console.log}
-        initialValues={{
-          date: null,
-          time: null,
-        }}
+        onSubmit={bookingRequest.mutate}
+        initialValues={
+          {
+            date: null,
+            time: null,
+            guestCount: "",
+          } as any
+        }
         validateOnChange={isSubmitClicked}
       >
         {({ handleSubmit, handleChange, setFieldValue, values, errors }) => (
@@ -145,6 +171,20 @@ export default function Booking() {
               />
               <Form.Control.Feedback type="invalid">
                 {errors.time}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="validationFormikGuests" className="mt-3">
+              <Form.Label>Гости</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Количество гостей"
+                name="guestCount"
+                value={values.guestCount}
+                onChange={handleChange}
+                isInvalid={!!errors.guestCount}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.guestCount}
               </Form.Control.Feedback>
             </Form.Group>
             <Button
