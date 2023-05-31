@@ -5,9 +5,8 @@ import Form from "react-bootstrap/Form"
 import useTablesQuery from "../hooks/queries/use-tables-query"
 import getUnavailableDates from "../lib/get-unavailable-dates"
 import useBookingsQuery from "../hooks/queries/use-bookings-query"
-import { Suspense, lazy, useMemo, useState } from "react"
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react"
 import DatePicker from "react-datepicker"
-import { InferType } from "yup"
 import {
   BOOKING_DURATION_HOURS,
   BOOKING_START_MAX_TIME,
@@ -16,15 +15,17 @@ import {
 } from "../lib/constants"
 import getUnavailableTimes from "../lib/get-unavailable-times"
 import getMaxGuestCount from "../lib/get-max-guest-count"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { addBooking } from "../redux/slices/bookings-slice"
 import { setToast } from "../redux/slices/toast-slice"
 import { useNavigate } from "react-router"
-import postBooking, { getBookingSchema } from "../api/post-booking"
+import postBooking, { BookingData, getBookingSchema } from "../api/post-booking"
 import useCurrentUser from "../hooks/use-current-user"
 import getToday from "../lib/get-today"
 import getErrorStatusCode from "../lib/get-error-status-code"
+import { QUERY_KEYS } from "../lib/query-keys"
+import { assert } from "../lib/assert"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
 
@@ -35,7 +36,10 @@ export default function Booking() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [isSubmitClicked, setIsSubmitClicked] = useState(false)
+  const [isRevalidating, setIsRevalidating] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const queryClient = useQueryClient()
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const unavailableDates = useMemo(() => {
     if (!bookingsQuery.data) {
@@ -61,16 +65,13 @@ export default function Booking() {
     return getMaxGuestCount(tablesQuery.data)
   }, [tablesQuery.data])
 
-  const bookingSchema = getBookingSchema(
-    unavailableDates,
-    unavailableTimes,
-    maxGuestCount,
-  )
-
   const bookingRequest = useMutation({
-    mutationFn: async (
-      data: InferType<typeof bookingSchema>,
-    ): Promise<void> => {
+    mutationFn: async (data: BookingData): Promise<void> => {
+      if (isRevalidating) {
+        setIsRevalidating(false)
+        return
+      }
+
       const booking = await postBooking(data, user!.uuid)
       dispatch(addBooking(booking))
       dispatch(
@@ -81,10 +82,38 @@ export default function Booking() {
   })
 
   // TODO: make datepickers readonly
-  // TODO: handle error 400 (revalidate queries) + test conflict (2 bookings at the same time)
+
   const submitButtonText = bookingRequest.isLoading
     ? "Загрузка..."
     : "Сохранить"
+  const errorStatusCode = getErrorStatusCode(bookingRequest)
+  const errorText =
+    errorStatusCode === 400
+      ? "Ошибка входных данных. Идет повторная проверка полей..."
+      : "При бронировании произошла ошибка. Попробуйте позже."
+
+  useEffect(() => {
+    if (errorStatusCode !== 400) {
+      return
+    }
+
+    Promise.allSettled([
+      queryClient.invalidateQueries([QUERY_KEYS.BOOKINGS]),
+      queryClient.invalidateQueries([QUERY_KEYS.TABLES]),
+    ]).then(() => {
+      bookingRequest.reset()
+      setIsRevalidating(true)
+    })
+  }, [bookingRequest, errorStatusCode, queryClient])
+
+  useEffect(() => {
+    if (!isRevalidating) {
+      return
+    }
+
+    assert(submitButtonRef.current)
+    submitButtonRef.current?.click()
+  }, [bookingRequest, isRevalidating])
 
   if (!user) {
     return <></>
@@ -94,7 +123,11 @@ export default function Booking() {
     <Container>
       <h1 className="fs-2 text-center mb-5">Забронировать</h1>
       <Formik
-        validationSchema={bookingSchema}
+        validationSchema={getBookingSchema(
+          unavailableDates,
+          unavailableTimes,
+          maxGuestCount,
+        )}
         onSubmit={bookingRequest.mutate}
         initialValues={
           {
@@ -178,6 +211,7 @@ export default function Booking() {
               </Form.Control.Feedback>
             </Form.Group>
             <Button
+              ref={submitButtonRef}
               type="submit"
               variant="dark"
               onClick={() => setIsSubmitClicked(true)}
@@ -196,7 +230,7 @@ export default function Booking() {
             style={{ maxWidth: "50%" }}
             className="mx-auto mt-4"
           >
-            При бронировании произошла ошибка. Попробуйте позже.
+            {errorText}
           </Alert>
         )}
       </Suspense>

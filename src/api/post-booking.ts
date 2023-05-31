@@ -15,6 +15,11 @@ import getToday from "../lib/get-today"
 import getTables from "../dummy-backend/get-tables"
 import getTablesToOccupy from "../lib/get-tables-to-occupy"
 import occupyTables from "../dummy-backend/occupy-tables"
+import getMaxGuestCount from "../lib/get-max-guest-count"
+import { ResponseError } from "../lib/response-error"
+import getUnavailableDates from "../lib/get-unavailable-dates"
+import getBookings from "../dummy-backend/get-bookings"
+import getUnavailableTimes from "../lib/get-unavailable-times"
 
 export const getBookingSchema = (
   unavailableDates: Date[],
@@ -66,9 +71,23 @@ export default async function (
 ): Promise<IBooking> {
   await delay(ARTIFICIAL_API_DELAY_MS)
 
-  // TODO: validate data
-
   const tables = getTables()
+  const bookings = getBookings()
+  const unavailableDates = getUnavailableDates(bookings)
+  const unavailableTimes = getUnavailableTimes(data.date, bookings)
+  const maxGuestCount = getMaxGuestCount(tables)
+
+  try {
+    await getBookingSchema(
+      unavailableDates,
+      unavailableTimes,
+      maxGuestCount,
+    ).validate(data)
+  } catch (e) {
+    console.error(e)
+    throw new ResponseError(400)
+  }
+
   const tablesToOccupy = getTablesToOccupy(tables, data.guestCount)
 
   const booking: IBooking = {
