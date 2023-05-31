@@ -6,7 +6,6 @@ import { IUser } from "../../lib/types"
 import { ARTIFICIAL_API_DELAY_MS } from "../../lib/constants"
 import { delay } from "../../lib/delay"
 
-// TODO: enhance validation
 export const loginSchema = object().shape({
   login: string()
     .trim()

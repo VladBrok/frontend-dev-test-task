@@ -22,10 +22,14 @@ export const bookingsSlice = createSlice({
       const uuid = action.payload
       state.list = state.list.filter((booking) => booking.uuid !== uuid)
     },
+    addBooking: (state, action: PayloadAction<IBooking>) => {
+      const booking = action.payload
+      state.list.push(booking)
+    },
   },
 })
 
-export const { setBookings, cancelBooking } = bookingsSlice.actions
+export const { setBookings, cancelBooking, addBooking } = bookingsSlice.actions
 
 export const selectBookingsOfUser = (userUuid: string) => (state: RootState) =>
   state.bookings.list.filter((x) => x.userUuid === userUuid)
