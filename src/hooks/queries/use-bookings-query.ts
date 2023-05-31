@@ -4,20 +4,14 @@ import { useDispatch } from "react-redux"
 import { setBookings } from "../../redux/slices/bookings-slice"
 import { IBooking } from "../../lib/types"
 
-export default function (userUuid: string) {
+export default function () {
   const dispatch = useDispatch()
 
-  const query = useQuery(
-    ["bookings", userUuid],
-    async (): Promise<IBooking[]> => {
-      const list = await fetchBookings(userUuid)
-      dispatch(setBookings(list))
-      return list
-    },
-    {
-      enabled: Boolean(userUuid),
-    },
-  )
+  const query = useQuery(["bookings"], async (): Promise<IBooking[]> => {
+    const list = await fetchBookings()
+    dispatch(setBookings(list))
+    return list
+  })
 
   return query
 }

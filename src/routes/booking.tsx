@@ -5,7 +5,6 @@ import Form from "react-bootstrap/Form"
 import useTablesQuery from "../hooks/queries/use-tables-query"
 import getUnavailableDates from "../lib/get-unavailable-dates"
 import useBookingsQuery from "../hooks/queries/use-bookings-query"
-import useCurrentUser from "../hooks/use-current-user"
 import { useMemo, useState } from "react"
 import DatePicker from "react-datepicker"
 import { date, object } from "yup"
@@ -19,9 +18,8 @@ import {
 import getUnavailableTimes from "../lib/get-unavailable-times"
 
 export default function Booking() {
-  const user = useCurrentUser()
   const tablesQuery = useTablesQuery()
-  const bookingsQuery = useBookingsQuery(user?.uuid || "")
+  const bookingsQuery = useBookingsQuery()
   const [isSubmitClicked, setIsSubmitClicked] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
@@ -76,10 +74,6 @@ export default function Booking() {
           ),
       ),
   })
-
-  if (!user) {
-    return <></>
-  }
 
   // TODO: make datepickers readonly
 

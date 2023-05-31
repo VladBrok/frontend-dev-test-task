@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IBooking } from "../../lib/types"
+import { RootState } from "../store"
 
 export interface IBookingsState {
   list: IBooking[]
@@ -25,5 +26,8 @@ export const bookingsSlice = createSlice({
 })
 
 export const { setBookings, cancelBooking } = bookingsSlice.actions
+
+export const selectBookingsOfUser = (userUuid: string) => (state: RootState) =>
+  state.bookings.list.filter((x) => x.userUuid === userUuid)
 
 export default bookingsSlice.reducer

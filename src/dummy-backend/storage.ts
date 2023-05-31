@@ -100,7 +100,7 @@ const INITIAL: IStorageData = {
       uuid: "4",
       datetime: new Date(2023, 4, 31, 17).toISOString(),
       guestCount: 1,
-      userUuid: "123",
+      userUuid: "fjdsl",
     },
   ],
   tables: initializeTables(),

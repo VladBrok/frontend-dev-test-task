@@ -1,4 +1,3 @@
-import { IBooking } from "../lib/types"
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import Row from "react-bootstrap/Row"
@@ -9,20 +8,23 @@ import dateComparator from "../lib/date-comparator"
 import { useNavigate } from "react-router"
 import { ROUTE_PATHS } from "../lib/constants"
 import { useAppSelector } from "../redux/hooks"
-
-export interface IBookingListProps {
-  bookings: IBooking[]
-}
+import { selectBookingsOfUser } from "../redux/slices/bookings-slice"
+import useCurrentUser from "../hooks/use-current-user"
 
 export default function BookingList() {
+  const user = useCurrentUser()
+  const bookings = useAppSelector(selectBookingsOfUser(user?.uuid || ""))
   const navigate = useNavigate()
-  const bookings = useAppSelector((state) => state.bookings.list)
 
   const sortedBookings = useMemo(
     () =>
       bookings.slice().sort((a, b) => dateComparator(a.datetime, b.datetime)),
     [bookings],
   )
+
+  if (!user) {
+    return <> </>
+  }
 
   return (
     <Container>
