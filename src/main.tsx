@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.css"
+import "react-datepicker/dist/react-datepicker.css"
 import "./index.css"
 import React from "react"
 import ReactDOM from "react-dom/client"
@@ -12,6 +13,10 @@ import Auth from "./routes/auth"
 import Dashboard from "./routes/dashboard"
 import Booking from "./routes/booking"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import ru from "date-fns/locale/ru"
+import { registerLocale, setDefaultLocale } from "react-datepicker"
+registerLocale("ru", ru)
+setDefaultLocale("ru")
 
 const router = createBrowserRouter([
   {
