@@ -1,8 +1,10 @@
-import { IBooking, IUser } from "../lib/types"
+import { IBooking, ITable, IUser } from "../lib/types"
+import initializeTables from "./initialize-tables"
 
 export interface IStorageData {
   users: IUser[]
   bookings: IBooking[]
+  tables: ITable[]
 }
 
 // TODO: remove defaults (except for tables)
@@ -41,6 +43,7 @@ const INITIAL: IStorageData = {
       userUuid: "123",
     },
   ],
+  tables: initializeTables(),
 }
 
 const KEY = "dummy-database"
