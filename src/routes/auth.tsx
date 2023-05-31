@@ -13,7 +13,6 @@ import registerUser, {
 import { useMutation } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { setCurrentUser } from "../redux/slices/users-slice"
-import { ResponseError } from "../lib/response-error"
 import loginUser, { LoginData, loginSchema } from "../api/auth/login-user"
 import getErrorStatusCode from "../lib/get-error-status-code"
 

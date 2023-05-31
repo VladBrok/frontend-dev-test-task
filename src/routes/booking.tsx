@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form"
 import useTablesQuery from "../hooks/queries/use-tables-query"
 import getUnavailableDates from "../lib/get-unavailable-dates"
 import useBookingsQuery from "../hooks/queries/use-bookings-query"
-import { useMemo, useState } from "react"
+import { Suspense, lazy, useMemo, useState } from "react"
 import DatePicker from "react-datepicker"
 import { InferType } from "yup"
 import {
@@ -24,6 +24,9 @@ import { useNavigate } from "react-router"
 import postBooking, { getBookingSchema } from "../api/post-booking"
 import useCurrentUser from "../hooks/use-current-user"
 import getToday from "../lib/get-today"
+import getErrorStatusCode from "../lib/get-error-status-code"
+
+const Alert = lazy(() => import("react-bootstrap/Alert"))
 
 export default function Booking() {
   const user = useCurrentUser()
@@ -78,7 +81,6 @@ export default function Booking() {
   })
 
   // TODO: make datepickers readonly
-  // TODO: add error state
   // TODO: handle error 400 (revalidate queries) + test conflict (2 bookings at the same time)
   const submitButtonText = bookingRequest.isLoading
     ? "Загрузка..."
@@ -187,6 +189,17 @@ export default function Booking() {
           </Form>
         )}
       </Formik>
+      <Suspense>
+        {bookingRequest.isError && (
+          <Alert
+            variant="danger"
+            style={{ maxWidth: "50%" }}
+            className="mx-auto mt-4"
+          >
+            При бронировании произошла ошибка. Попробуйте позже.
+          </Alert>
+        )}
+      </Suspense>
     </Container>
   )
 }
