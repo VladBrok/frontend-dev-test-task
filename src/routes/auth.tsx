@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux"
 import { setCurrentUser } from "../redux/slices/users-slice"
 import { ResponseError } from "../lib/response-error"
 import loginUser, { LoginData, loginSchema } from "../api/auth/login-user"
+import getErrorStatusCode from "../lib/get-error-status-code"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
 
@@ -43,12 +44,6 @@ export default function Auth() {
     setSearchParams(`action=${AUTH_ACTIONS[action]}`)
   }
 
-  const getErrorStatusCode = (): number | null => {
-    const isError =
-      authRequest.isError && authRequest.error instanceof ResponseError
-    return isError ? (authRequest.error as ResponseError).status : null
-  }
-
   const authSchema =
     action === AUTH_ACTIONS.REGISTER ? registrationSchema : loginSchema
 
@@ -58,9 +53,9 @@ export default function Auth() {
     ? "Регистрация"
     : "Вход"
 
-  const isUserAlreadyExists = getErrorStatusCode() === 409
-  const isUserNotFound = getErrorStatusCode() === 404
-  const isInvalidPassword = getErrorStatusCode() === 401
+  const isUserAlreadyExists = getErrorStatusCode(authRequest) === 409
+  const isUserNotFound = getErrorStatusCode(authRequest) === 404
+  const isInvalidPassword = getErrorStatusCode(authRequest) === 401
 
   const errorText = isUserAlreadyExists
     ? "Пользователь с данным логином уже существует. Пожалуйста, укажите другой логин, или войдите в систему."

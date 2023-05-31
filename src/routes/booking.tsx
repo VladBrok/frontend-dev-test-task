@@ -78,16 +78,15 @@ export default function Booking() {
   })
 
   // TODO: make datepickers readonly
-
-  if (!user) {
-    return <></>
-  }
-
   // TODO: add error state
   // TODO: handle error 400 (revalidate queries) + test conflict (2 bookings at the same time)
   const submitButtonText = bookingRequest.isLoading
     ? "Загрузка..."
     : "Сохранить"
+
+  if (!user) {
+    return <></>
+  }
 
   return (
     <Container>
