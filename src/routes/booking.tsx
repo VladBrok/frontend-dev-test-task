@@ -21,25 +21,25 @@ import getUnavailableTimes from "../lib/get-unavailable-times"
 export default function Booking() {
   const user = useCurrentUser()
   const tablesQuery = useTablesQuery()
-  const bookinsQuery = useBookingsQuery(user?.uuid || "")
+  const bookingsQuery = useBookingsQuery(user?.uuid || "")
   const [isSubmitClicked, setIsSubmitClicked] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
   const unavailableDates = useMemo(() => {
-    if (!bookinsQuery.data) {
+    if (!bookingsQuery.data) {
       return []
     }
 
-    return getUnavailableDates(bookinsQuery.data)
-  }, [bookinsQuery.data])
+    return getUnavailableDates(bookingsQuery.data)
+  }, [bookingsQuery.data])
 
   const unavailableTimes = useMemo(() => {
-    if (!selectedDate || !bookinsQuery.data) {
+    if (!selectedDate || !bookingsQuery.data) {
       return []
     }
 
-    return getUnavailableTimes(selectedDate, bookinsQuery.data)
-  }, [bookinsQuery.data, selectedDate])
+    return getUnavailableTimes(selectedDate, bookingsQuery.data)
+  }, [bookingsQuery.data, selectedDate])
 
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
