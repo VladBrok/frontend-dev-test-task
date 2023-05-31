@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux"
 import { cancelBooking as cancelBookingAction } from "../redux/slices/bookings-slice"
 import { setToast } from "../redux/slices/toast-slice"
 import cancelBooking from "../api/cancel-booking"
+import canCancelBooking from "../lib/can-cancel-booking"
 
 const Modal = lazy(() => import("react-bootstrap/Modal"))
 const ModalHeader = lazy(() => import("react-bootstrap/ModalHeader"))
@@ -66,43 +67,66 @@ export default function BookingCard({ booking }: IBookingProps) {
         </Card.Body>
         <Card.Footer className="d-flex justify-content-end gap-3">
           <Button variant="outline-primary">Редактировать</Button>
-          <Button variant="outline-danger" onClick={openModal}>
-            Отменить
-          </Button>
+          {canCancelBooking(booking) && (
+            <Button variant="outline-danger" onClick={openModal}>
+              Отменить
+            </Button>
+          )}
         </Card.Footer>
       </Card>
 
       <Suspense>
         {isModalOpen && (
           <Modal show={isModalOpen} onHide={closeModal} centered>
-            <ModalHeader closeButton>
-              <ModalTitle>Подтвердите отмену</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <p>
-                Выбрано бронирование на {guestCount}, на дату: {datetime}.
-              </p>
-              <p>Отмененное бронирование нельзя будет восстановить.</p>
-              <Suspense>
-                {cancellationRequest.isError && (
-                  <Alert variant="danger">
-                    Не удалось отменить бронирование. Попробуйте позже.
-                  </Alert>
-                )}
-              </Suspense>
-            </ModalBody>
-            <ModalFooter>
-              <Button variant="outline-secondary" onClick={closeModal}>
-                Закрыть
-              </Button>
-              <Button
-                variant="outline-danger"
-                onClick={() => cancellationRequest.mutate()}
-                disabled={cancellationRequest.isLoading}
-              >
-                {modalConfirmButtonText}
-              </Button>
-            </ModalFooter>
+            {canCancelBooking(booking) ? (
+              <>
+                <ModalHeader closeButton>
+                  <ModalTitle>Подтвердите отмену</ModalTitle>
+                </ModalHeader>
+                <ModalBody>
+                  <p>
+                    Выбрано бронирование на {guestCount}, на дату: {datetime}.
+                  </p>
+                  <p>Отмененное бронирование нельзя будет восстановить.</p>
+                  <Suspense>
+                    {cancellationRequest.isError && (
+                      <Alert variant="danger">
+                        Не удалось отменить бронирование. Попробуйте позже.
+                      </Alert>
+                    )}
+                  </Suspense>
+                </ModalBody>
+                <ModalFooter>
+                  <Button variant="outline-secondary" onClick={closeModal}>
+                    Закрыть
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => cancellationRequest.mutate()}
+                    disabled={cancellationRequest.isLoading}
+                  >
+                    {modalConfirmButtonText}
+                  </Button>
+                </ModalFooter>
+              </>
+            ) : (
+              <>
+                <ModalHeader closeButton>
+                  <ModalTitle>Отмена недоступна</ModalTitle>
+                </ModalHeader>
+                <ModalBody>
+                  <p>
+                    Бронирование можно отменить не позднее чем за 1 час до
+                    времени бронирования.
+                  </p>
+                </ModalBody>
+                <ModalFooter>
+                  <Button variant="outline-secondary" onClick={closeModal}>
+                    ОК
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
           </Modal>
         )}
       </Suspense>

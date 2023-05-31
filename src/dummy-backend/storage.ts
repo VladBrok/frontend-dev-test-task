@@ -34,6 +34,12 @@ const INITIAL: IStorageData = {
       guestCount: 5,
       userUuid: "123",
     },
+    {
+      uuid: "4",
+      datetime: new Date(2023, 4, 31, 8, 35, 0).toISOString(),
+      guestCount: 1,
+      userUuid: "123",
+    },
   ],
 }
 
