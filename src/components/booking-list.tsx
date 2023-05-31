@@ -20,7 +20,7 @@ export default function BookingList() {
 
   const sortedBookings = useMemo(
     () =>
-      bookings.slice().sort((a, b) => dateComparator(b.datetime, a.datetime)),
+      bookings.slice().sort((a, b) => dateComparator(a.datetime, b.datetime)),
     [bookings],
   )
 
