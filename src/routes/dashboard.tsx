@@ -10,7 +10,7 @@ const Alert = lazy(() => import("react-bootstrap/Alert"))
 export default function Dashboard() {
   const user = useCurrentUser()
   const userUuid = user?.uuid || ""
-  const bookingsRequest = useBookingsQuery(userUuid)
+  const bookingsQuery = useBookingsQuery(userUuid)
 
   if (!user) {
     return <></>
@@ -26,14 +26,14 @@ export default function Dashboard() {
     <Container>
       <h1 className="fs-2 mb-4">Текущие бронирования</h1>
       <Suspense fallback={spinner}>
-        {bookingsRequest.isLoading && spinner}
-        {bookingsRequest.isError && (
+        {bookingsQuery.isLoading && spinner}
+        {bookingsQuery.isError && (
           <Alert variant="danger" className="w-50 mx-auto">
             Не удалось загрузить текущие бронирования. Попробуйте перезагрузить
             страницу.
           </Alert>
         )}
-        {bookingsRequest.isSuccess && <BookingList />}
+        {bookingsQuery.isSuccess && <BookingList />}
       </Suspense>
     </Container>
   )
