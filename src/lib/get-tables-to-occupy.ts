@@ -1,5 +1,5 @@
 import { assert } from "./assert"
-import getMaxGuestCount from "./get-max-guest-count"
+import getAvailableGuestCount from "./get-available-guest-count"
 import { ITable } from "./types"
 
 export default function getTablesToOccupy(
@@ -10,10 +10,10 @@ export default function getTablesToOccupy(
     throw new Error(`Guest count should be > 0 (received ${guestCount}).`)
   }
 
-  const maxGuestCount = getMaxGuestCount(tables)
-  if (guestCount > maxGuestCount) {
+  const availableGuestCount = getAvailableGuestCount(tables)
+  if (guestCount > availableGuestCount) {
     throw new Error(
-      `Supplied guest count = ${guestCount} is greater than max = ${maxGuestCount}.`,
+      `Supplied guest count = ${guestCount} is greater than max = ${availableGuestCount}.`,
     )
   }
 

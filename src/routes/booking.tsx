@@ -14,7 +14,7 @@ import {
   ROUTE_PATHS,
 } from "../lib/constants"
 import getUnavailableTimes from "../lib/get-unavailable-times"
-import getMaxGuestCount from "../lib/get-max-guest-count"
+import getAvailableGuestCount from "../lib/get-available-guest-count"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { addBooking } from "../redux/slices/bookings-slice"
@@ -58,12 +58,12 @@ export default function Booking() {
     return getUnavailableTimes(selectedDate, bookingsQuery.data)
   }, [bookingsQuery.data, selectedDate])
 
-  const maxGuestCount = useMemo(() => {
+  const availableGuestCount = useMemo(() => {
     if (!tablesQuery.data) {
       return 1
     }
 
-    return getMaxGuestCount(tablesQuery.data)
+    return getAvailableGuestCount(tablesQuery.data)
   }, [tablesQuery.data])
 
   const bookingRequest = useMutation({
@@ -125,7 +125,7 @@ export default function Booking() {
         validationSchema={getBookingSchema(
           unavailableDates,
           unavailableTimes,
-          maxGuestCount,
+          availableGuestCount,
         )}
         onSubmit={bookingRequest.mutate}
         initialValues={

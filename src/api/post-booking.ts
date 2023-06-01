@@ -15,7 +15,7 @@ import getToday from "../lib/get-today"
 import getTables from "../dummy-backend/get-tables"
 import getTablesToOccupy from "../lib/get-tables-to-occupy"
 import occupyTables from "../dummy-backend/occupy-tables"
-import getMaxGuestCount from "../lib/get-max-guest-count"
+import getAvailableGuestCount from "../lib/get-available-guest-count"
 import { ResponseError } from "../lib/response-error"
 import getUnavailableDates from "../lib/get-unavailable-dates"
 import getBookings from "../dummy-backend/get-bookings"
@@ -75,13 +75,13 @@ export default async function (
   const bookings = getBookings()
   const unavailableDates = getUnavailableDates(bookings)
   const unavailableTimes = getUnavailableTimes(data.date, bookings)
-  const maxGuestCount = getMaxGuestCount(tables)
+  const availableGuestCount = getAvailableGuestCount(tables)
 
   try {
     await getBookingSchema(
       unavailableDates,
       unavailableTimes,
-      maxGuestCount,
+      availableGuestCount,
     ).validate(data)
   } catch (e) {
     console.error(e)
