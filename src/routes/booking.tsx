@@ -55,7 +55,10 @@ export default function Booking() {
 
   const tablesQuery = useTablesQuery()
   const bookingsQuery = useBookingsQuery()
-  useCacheCleaner([QUERY_KEYS.BOOKINGS, QUERY_KEYS.TABLES])
+  useCacheCleaner([
+    [QUERY_KEYS.BOOKINGS, bookingsQuery],
+    [QUERY_KEYS.TABLES, tablesQuery],
+  ])
 
   const unavailableDates = useMemo(() => {
     if (!bookingsQuery.data) {
