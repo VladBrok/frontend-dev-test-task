@@ -1,5 +1,6 @@
 import { assert } from "../lib/assert"
-import { ITable } from "../lib/types"
+import getTablesToOccupy from "../lib/get-tables-to-occupy"
+import { IBooking, ITable } from "../lib/types"
 import { v4 as uuidv4 } from "uuid"
 
 interface ITableConfig {
@@ -23,7 +24,7 @@ const CONFIG: ITableConfig[] = [
 ]
 const TOTAL_TABLE_COUNT = CONFIG.reduce((sum, cur) => sum + cur.tableCount, 0)
 
-export default function (): ITable[] {
+export default function (bookings: IBooking[]): ITable[] {
   const tables: ITable[] = []
 
   for (let i = 0; i < CONFIG.length; i++) {
@@ -31,12 +32,23 @@ export default function (): ITable[] {
       tables.push({
         uuid: uuidv4(),
         guestCount: CONFIG[i].guestCount,
-        bookingUuid: null, // TODO: book some
+        bookingUuid: null,
       })
     }
   }
 
   assert(tables.length === TOTAL_TABLE_COUNT)
+
+  for (const booking of bookings) {
+    const tablesToOccupy = getTablesToOccupy(tables, booking.guestCount).map(
+      (table) => table.uuid,
+    )
+    tables
+      .filter((table) => tablesToOccupy.includes(table.uuid))
+      .forEach((table) => {
+        table.bookingUuid = booking.uuid
+      })
+  }
 
   return tables
 }

@@ -23,7 +23,6 @@ export default function getTablesToOccupy(
     .slice()
     .sort((a, b) => b.guestCount - a.guestCount)
   const result: ITable[] = []
-
   let remainingGuests = guestCount
 
   for (let i = 0; i < sortedAvailable.length && remainingGuests > 0; i++) {
