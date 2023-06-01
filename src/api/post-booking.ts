@@ -10,7 +10,7 @@ import {
 import { delay } from "../lib/delay"
 import { IBooking } from "../lib/types"
 import { v4 as uuidv4 } from "uuid"
-import pluralizeGuestCount from "../lib/pluralize-guest-count"
+import pluralizeGuests from "../lib/pluralize-guests"
 import getToday from "../lib/get-today"
 import getTables from "../dummy-backend/get-tables"
 import getTablesToOccupy from "../lib/get-tables-to-occupy"
@@ -59,7 +59,7 @@ export const getBookingSchema = (
     guestCount: number()
       .required("Обязательное поле")
       .min(1, "Минимум 1 гость")
-      .max(maxGuestCount, `Максимум ${pluralizeGuestCount(maxGuestCount)}`),
+      .max(maxGuestCount, `Максимум ${pluralizeGuests(maxGuestCount)}`),
   })
 }
 const schema = getBookingSchema([], [], 0)

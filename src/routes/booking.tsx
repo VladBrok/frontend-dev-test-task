@@ -28,6 +28,7 @@ import { QUERY_KEYS } from "../lib/query-keys"
 import { assert } from "../lib/assert"
 import blockDatepickerManualEditing from "../lib/block-datepicker-manual-editing"
 import scrollToFirstAvailableTime from "../lib/scroll-to-first-available-time"
+import pluralizeHours from "../lib/pluralize-hours"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
 const AlertHeading = lazy(() =>
@@ -230,6 +231,10 @@ export default function Booking() {
                 <Form.Control.Feedback type="invalid">
                   {errors.time}
                 </Form.Control.Feedback>
+                <Form.Text className="text-muted">
+                  Продолжительность бронирования:{" "}
+                  {pluralizeHours(BOOKING_DURATION_HOURS)}
+                </Form.Text>
               </Form.Group>
               <Form.Group controlId="validationFormikGuests" className="mt-3">
                 <Form.Label>Гости</Form.Label>

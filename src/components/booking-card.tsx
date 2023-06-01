@@ -1,5 +1,5 @@
 import formatDatetime from "../lib/format-datetime"
-import pluralizeGuestCount from "../lib/pluralize-guest-count"
+import pluralizeGuests from "../lib/pluralize-guests"
 import { IBooking } from "../lib/types"
 import Card from "react-bootstrap/Card"
 import Button from "react-bootstrap/Button"
@@ -50,7 +50,7 @@ export default function BookingCard({ booking }: IBookingProps) {
   )
 
   const guestCount = useMemo(
-    () => pluralizeGuestCount(booking.guestCount),
+    () => pluralizeGuests(booking.guestCount),
     [booking.guestCount],
   )
 
