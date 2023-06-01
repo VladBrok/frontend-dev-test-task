@@ -26,6 +26,7 @@ import getToday from "../lib/get-today"
 import getErrorStatusCode from "../lib/get-error-status-code"
 import { QUERY_KEYS } from "../lib/query-keys"
 import { assert } from "../lib/assert"
+import blockDatepickerManualEditing from "../lib/block-datepicker-manual-editing"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
 
@@ -80,8 +81,6 @@ export default function Booking() {
       navigate(ROUTE_PATHS.DASHBOARD)
     },
   })
-
-  // TODO: make datepickers readonly
 
   const submitButtonText = bookingRequest.isLoading
     ? "Загрузка..."
@@ -159,6 +158,7 @@ export default function Booking() {
                   setSelectedDate(val)
                   setFieldValue("date", val)
                 }}
+                onFocus={blockDatepickerManualEditing}
                 minDate={getToday()}
                 excludeDates={unavailableDates}
               />
@@ -188,6 +188,7 @@ export default function Booking() {
                 onChange={(val) => {
                   setFieldValue("time", val)
                 }}
+                onFocus={blockDatepickerManualEditing}
                 excludeTimes={unavailableTimes}
                 minTime={BOOKING_START_MIN_TIME}
                 maxTime={BOOKING_START_MAX_TIME}
