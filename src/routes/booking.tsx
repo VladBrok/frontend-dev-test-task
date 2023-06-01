@@ -29,6 +29,11 @@ import { assert } from "../lib/assert"
 import blockDatepickerManualEditing from "../lib/block-datepicker-manual-editing"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
+const AlertHeading = lazy(() =>
+  import("react-bootstrap/Alert").then((module) => ({
+    default: module.default.Heading,
+  })),
+)
 
 export default function Booking() {
   const user = useCurrentUser()
@@ -114,13 +119,27 @@ export default function Booking() {
     submitButtonRef.current?.click()
   }, [bookingRequest, isRevalidating])
 
+  const canBook = availableGuestCount > 0
+
   if (!user) {
     return <></>
   }
 
   return (
     <Container>
-      <h1 className="fs-2 text-center mb-5">Забронировать</h1>
+      {canBook ? (
+        <h1 className="fs-2 text-center mb-5">Забронировать</h1>
+      ) : (
+        <Suspense>
+          <Alert variant="primary" className="w-50 mx-auto">
+            <AlertHeading>Бронирование недоступно</AlertHeading>
+            <p className="mb-0">
+              Все столики уже забронированы. Возвращайтесь позже
+            </p>
+          </Alert>
+        </Suspense>
+      )}
+
       <Formik
         validationSchema={getBookingSchema(
           unavailableDates,
@@ -139,88 +158,90 @@ export default function Booking() {
       >
         {({ handleSubmit, handleChange, setFieldValue, values, errors }) => (
           <Form noValidate onSubmit={handleSubmit} className="w-25 mx-auto">
-            <Form.Group controlId="validationFormikDate" className="mt-3">
-              <Form.Label>Дата</Form.Label>
-              <DatePicker
-                customInput={
-                  <Form.Control
-                    type="text"
-                    disabled
-                    readOnly
-                    isInvalid={!!errors.date}
-                  />
-                }
-                dateFormat="dd.MM.yyyy"
-                placeholderText="Дата бронирования"
-                name="date"
-                selected={values.date}
-                onChange={(val) => {
-                  setSelectedDate(val)
-                  setFieldValue("date", val)
-                }}
-                onFocus={blockDatepickerManualEditing}
-                minDate={getToday()}
-                excludeDates={unavailableDates}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.date}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="validationFormikTime" className="mt-3">
-              <Form.Label>Время</Form.Label>
-              <DatePicker
-                customInput={
-                  <Form.Control
-                    type="text"
-                    disabled
-                    readOnly
-                    isInvalid={!!errors.time}
-                  />
-                }
-                showTimeSelect
-                showTimeSelectOnly
-                timeCaption=""
-                timeIntervals={BOOKING_DURATION_HOURS * 60}
-                dateFormat="HH:mm"
-                placeholderText="Время бронирования"
-                name="time"
-                selected={values.time}
-                onChange={(val) => {
-                  setFieldValue("time", val)
-                }}
-                onFocus={blockDatepickerManualEditing}
-                excludeTimes={unavailableTimes}
-                minTime={BOOKING_START_MIN_TIME}
-                maxTime={BOOKING_START_MAX_TIME}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.time}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="validationFormikGuests" className="mt-3">
-              <Form.Label>Гости</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Количество гостей"
-                name="guestCount"
-                value={values.guestCount}
-                onChange={handleChange}
-                isInvalid={!!errors.guestCount}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.guestCount}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Button
-              ref={submitButtonRef}
-              type="submit"
-              variant="dark"
-              onClick={() => setIsSubmitClicked(true)}
-              disabled={bookingRequest.isLoading}
-              className="mt-4 w-100 d-block"
-            >
-              {submitButtonText}
-            </Button>
+            <fieldset disabled={!canBook}>
+              <Form.Group controlId="validationFormikDate" className="mt-3">
+                <Form.Label>Дата</Form.Label>
+                <DatePicker
+                  customInput={
+                    <Form.Control
+                      type="text"
+                      disabled
+                      readOnly
+                      isInvalid={!!errors.date}
+                    />
+                  }
+                  dateFormat="dd.MM.yyyy"
+                  placeholderText="Дата бронирования"
+                  name="date"
+                  selected={values.date}
+                  onChange={(val) => {
+                    setSelectedDate(val)
+                    setFieldValue("date", val)
+                  }}
+                  onFocus={blockDatepickerManualEditing}
+                  minDate={getToday()}
+                  excludeDates={unavailableDates}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.date}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group controlId="validationFormikTime" className="mt-3">
+                <Form.Label>Время</Form.Label>
+                <DatePicker
+                  customInput={
+                    <Form.Control
+                      type="text"
+                      disabled
+                      readOnly
+                      isInvalid={!!errors.time}
+                    />
+                  }
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeCaption=""
+                  timeIntervals={BOOKING_DURATION_HOURS * 60}
+                  dateFormat="HH:mm"
+                  placeholderText="Время бронирования"
+                  name="time"
+                  selected={values.time}
+                  onChange={(val) => {
+                    setFieldValue("time", val)
+                  }}
+                  onFocus={blockDatepickerManualEditing}
+                  excludeTimes={unavailableTimes}
+                  minTime={BOOKING_START_MIN_TIME}
+                  maxTime={BOOKING_START_MAX_TIME}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.time}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group controlId="validationFormikGuests" className="mt-3">
+                <Form.Label>Гости</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Количество гостей"
+                  name="guestCount"
+                  value={values.guestCount}
+                  onChange={handleChange}
+                  isInvalid={!!errors.guestCount}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.guestCount}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Button
+                ref={submitButtonRef}
+                type="submit"
+                variant="dark"
+                onClick={() => setIsSubmitClicked(true)}
+                disabled={bookingRequest.isLoading}
+                className="mt-4 w-100 d-block"
+              >
+                {submitButtonText}
+              </Button>
+            </fieldset>
           </Form>
         )}
       </Formik>
