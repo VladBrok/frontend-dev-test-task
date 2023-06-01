@@ -158,7 +158,12 @@ export default function Booking() {
         validateOnChange={isSubmitClicked}
       >
         {({ handleSubmit, handleChange, setFieldValue, values, errors }) => (
-          <Form noValidate onSubmit={handleSubmit} className="w-25 mx-auto">
+          <Form
+            noValidate
+            onSubmit={handleSubmit}
+            className="mx-auto"
+            style={{ width: "max(285px, 27%)" }}
+          >
             <fieldset disabled={!canBook}>
               <Form.Group controlId="validationFormikDate" className="mt-3">
                 <Form.Label>Дата</Form.Label>
@@ -254,6 +259,7 @@ export default function Booking() {
           </Form>
         )}
       </Formik>
+
       <Suspense>
         {bookingRequest.isError && (
           <Alert
