@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import fetchTables from "../../api/fetch-tables"
+import fetchTables from "../../api/tables/fetch-tables"
 import { ITable } from "../../lib/types"
 import { QUERY_KEYS } from "../../lib/query-keys"
 

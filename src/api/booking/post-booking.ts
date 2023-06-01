@@ -1,25 +1,25 @@
 import { InferType, date, number, object } from "yup"
-import saveBooking from "../dummy-backend/save-booking"
+import saveBooking from "../../dummy-backend/save-booking"
 import {
   ARTIFICIAL_API_DELAY_MS,
   BOOKING_START_MAX_HOURS,
   BOOKING_START_MAX_TIME,
   BOOKING_START_MIN_HOURS,
   BOOKING_START_MIN_TIME,
-} from "../lib/constants"
-import { delay } from "../lib/delay"
-import { IBooking } from "../lib/types"
+} from "../../lib/constants"
+import { delay } from "../../lib/delay"
+import { IBooking } from "../../lib/types"
 import { v4 as uuidv4 } from "uuid"
-import pluralizeGuests from "../lib/pluralize-guests"
-import getToday from "../lib/get-today"
-import getTables from "../dummy-backend/get-tables"
-import getTablesToOccupy from "../lib/get-tables-to-occupy"
-import occupyTables from "../dummy-backend/occupy-tables"
-import getAvailableGuestCount from "../lib/get-available-guest-count"
-import { ResponseError } from "../lib/response-error"
-import getUnavailableDates from "../lib/get-unavailable-dates"
-import getBookings from "../dummy-backend/get-bookings"
-import getUnavailableTimes from "../lib/get-unavailable-times"
+import pluralizeGuests from "../../lib/pluralize/pluralize-guests"
+import getToday from "../../lib/get-today"
+import getTables from "../../dummy-backend/get-tables"
+import getTablesToOccupy from "../../lib/get-tables-to-occupy"
+import occupyTables from "../../dummy-backend/occupy-tables"
+import getAvailableGuestCount from "../../lib/get-available-guest-count"
+import { ResponseError } from "../../lib/response-error"
+import getUnavailableDates from "../../lib/get-unavailable-dates"
+import getBookings from "../../dummy-backend/get-bookings"
+import getUnavailableTimes from "../../lib/get-unavailable-times"
 
 export const getBookingSchema = (
   unavailableDates: Date[],

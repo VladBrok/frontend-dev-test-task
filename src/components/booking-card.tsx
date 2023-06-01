@@ -1,5 +1,5 @@
 import formatDatetime from "../lib/format-datetime"
-import pluralizeGuests from "../lib/pluralize-guests"
+import pluralizeGuests from "../lib/pluralize/pluralize-guests"
 import { IBooking } from "../lib/types"
 import Card from "react-bootstrap/Card"
 import Button from "react-bootstrap/Button"
@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { cancelBooking as cancelBookingAction } from "../redux/slices/bookings-slice"
 import { setToast } from "../redux/slices/toast-slice"
-import cancelBooking from "../api/cancel-booking"
+import cancelBooking from "../api/booking/cancel-booking"
 import canCancelBooking from "../lib/can-cancel-booking"
 
 const Modal = lazy(() => import("react-bootstrap/Modal"))

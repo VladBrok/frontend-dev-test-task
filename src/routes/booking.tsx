@@ -20,7 +20,10 @@ import { useDispatch } from "react-redux"
 import { addBooking } from "../redux/slices/bookings-slice"
 import { setToast } from "../redux/slices/toast-slice"
 import { useNavigate } from "react-router"
-import postBooking, { BookingData, getBookingSchema } from "../api/post-booking"
+import postBooking, {
+  BookingData,
+  getBookingSchema,
+} from "../api/booking/post-booking"
 import useCurrentUser from "../hooks/use-current-user"
 import getToday from "../lib/get-today"
 import getErrorStatusCode from "../lib/get-error-status-code"
@@ -28,7 +31,7 @@ import { QUERY_KEYS } from "../lib/query-keys"
 import { assert } from "../lib/assert"
 import blockDatepickerManualEditing from "../lib/block-datepicker-manual-editing"
 import scrollToFirstAvailableTime from "../lib/scroll-to-first-available-time"
-import pluralizeHours from "../lib/pluralize-hours"
+import pluralizeHours from "../lib/pluralize/pluralize-hours"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
 const AlertHeading = lazy(() =>
