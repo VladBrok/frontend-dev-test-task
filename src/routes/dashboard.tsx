@@ -16,7 +16,7 @@ export default function Dashboard() {
   )
 
   return (
-    <Container>
+    <Container className="pb-4">
       <h1 className="fs-2 mb-4">Текущие бронирования</h1>
       <Suspense fallback={spinner}>
         {bookingsQuery.isLoading && spinner}
@@ -26,9 +26,7 @@ export default function Dashboard() {
             страницу.
           </Alert>
         )}
-        {bookingsQuery.isSuccess && (
-          <BookingList bookings={bookingsQuery.data} />
-        )}
+        {bookingsQuery.isSuccess && <BookingList />}
       </Suspense>
     </Container>
   )

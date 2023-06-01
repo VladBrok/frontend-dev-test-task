@@ -66,8 +66,6 @@ export default function BookingCard({ booking }: IBookingProps) {
           <Card.Text className="fs-5 mt-3">{guestCount}</Card.Text>
         </Card.Body>
         <Card.Footer className="d-flex justify-content-end gap-3">
-          {/* TODO: implement editing */}
-          <Button variant="outline-primary">Редактировать</Button>
           {canCancelBooking(booking) && (
             <Button variant="outline-danger" onClick={openModal}>
               Отменить
