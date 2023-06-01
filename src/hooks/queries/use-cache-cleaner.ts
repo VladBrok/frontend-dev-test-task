@@ -10,12 +10,10 @@ export default function (queryKeys: string[]) {
       return
     }
 
-    console.log("clean")
-
     isCleaned.current = true
 
     queryKeys.forEach((key) => {
-      queryClient.removeQueries([key])
+      queryClient.resetQueries([key])
     })
   }, [queryClient, queryKeys])
 }
