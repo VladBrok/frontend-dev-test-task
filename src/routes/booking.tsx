@@ -27,6 +27,7 @@ import getErrorStatusCode from "../lib/get-error-status-code"
 import { QUERY_KEYS } from "../lib/query-keys"
 import { assert } from "../lib/assert"
 import blockDatepickerManualEditing from "../lib/block-datepicker-manual-editing"
+import scrollToFirstAvailableTime from "../lib/scroll-to-first-available-time"
 
 const Alert = lazy(() => import("react-bootstrap/Alert"))
 const AlertHeading = lazy(() =>
@@ -46,6 +47,7 @@ export default function Booking() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const queryClient = useQueryClient()
   const submitButtonRef = useRef<HTMLButtonElement | null>(null)
+  const timeContainerRef = useRef<HTMLDivElement | null>(null)
 
   const unavailableDates = useMemo(() => {
     if (!bookingsQuery.data) {
@@ -95,6 +97,7 @@ export default function Booking() {
     errorStatusCode === 400
       ? "Ошибка входных данных. Идет повторная проверка полей..."
       : "При бронировании произошла ошибка. Попробуйте позже."
+  const canBook = availableGuestCount > 0
 
   useEffect(() => {
     if (errorStatusCode !== 400) {
@@ -118,8 +121,6 @@ export default function Booking() {
     assert(submitButtonRef.current)
     submitButtonRef.current?.click()
   }, [bookingRequest, isRevalidating])
-
-  const canBook = availableGuestCount > 0
 
   if (!user) {
     return <></>
@@ -197,6 +198,11 @@ export default function Booking() {
                       isInvalid={!!errors.time}
                     />
                   }
+                  calendarContainer={({ children, className }) => (
+                    <div className={className} ref={timeContainerRef}>
+                      {children}
+                    </div>
+                  )}
                   showTimeSelect
                   showTimeSelectOnly
                   timeCaption=""
@@ -209,6 +215,9 @@ export default function Booking() {
                     setFieldValue("time", val)
                   }}
                   onFocus={blockDatepickerManualEditing}
+                  onCalendarOpen={() =>
+                    !values.time && scrollToFirstAvailableTime(timeContainerRef)
+                  }
                   excludeTimes={unavailableTimes}
                   minTime={BOOKING_START_MIN_TIME}
                   maxTime={BOOKING_START_MAX_TIME}
