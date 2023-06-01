@@ -103,7 +103,12 @@ export default function Auth() {
         validateOnChange={isSubmitClicked}
       >
         {({ handleSubmit, handleChange, setFieldValue, values, errors }) => (
-          <Form noValidate onSubmit={handleSubmit} className="w-25 mx-auto">
+          <Form
+            noValidate
+            onSubmit={handleSubmit}
+            className="mx-auto"
+            style={{ width: "max(285px, 27%)" }}
+          >
             <Form.Group controlId="validationFormikLogin" className="mt-3">
               <Form.Label>Логин</Form.Label>
               <Form.Control
