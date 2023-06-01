@@ -5,7 +5,7 @@ import {
   useNavigate,
   useRouteError,
 } from "react-router-dom"
-import { ROUTE_PATHS } from "../lib/shared-constants"
+import { ROUTE_PATHS } from "../lib/constants"
 
 interface IErrorInfo {
   title: string
