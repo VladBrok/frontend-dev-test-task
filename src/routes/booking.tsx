@@ -126,6 +126,8 @@ export default function Booking() {
     submitButtonRef.current?.click()
   }, [bookingRequest, isRevalidating])
 
+  // TODO: queries loading / error
+
   if (!user) {
     return <></>
   }
@@ -193,7 +195,7 @@ export default function Booking() {
                   excludeDates={unavailableDates}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.date}
+                  <>{errors.date}</>
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group controlId="validationFormikTime" className="mt-3">
@@ -232,7 +234,7 @@ export default function Booking() {
                   maxTime={BOOKING_START_MAX_TIME}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.time}
+                  <>{errors.time}</>
                 </Form.Control.Feedback>
                 <Form.Text className="text-muted">
                   Продолжительность бронирования:{" "}
