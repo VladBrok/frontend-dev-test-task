@@ -8,8 +8,7 @@ export interface IUserState {
 }
 
 const initialState: IUserState = {
-  // TODO: set to null
-  current: getUser("vlad"),
+  current: null,
 }
 
 export const usersSlice = createSlice({
