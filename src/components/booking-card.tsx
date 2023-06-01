@@ -66,11 +66,13 @@ export default function BookingCard({ booking }: IBookingProps) {
           <Card.Text className="fs-5 mt-3">{guestCount}</Card.Text>
         </Card.Body>
         <Card.Footer className="d-flex justify-content-end gap-3">
-          {canCancelBooking(booking) && (
-            <Button variant="outline-danger" onClick={openModal}>
-              Отменить
-            </Button>
-          )}
+          <Button
+            variant="outline-danger"
+            onClick={openModal}
+            disabled={!canCancelBooking(booking)}
+          >
+            Отменить
+          </Button>
         </Card.Footer>
       </Card>
 
